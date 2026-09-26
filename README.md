@@ -37,9 +37,9 @@ no face                    -> all lights off
 ```bash
 bash install_pi.sh
 source .venv/bin/activate
-bash download_models.sh
-pip install -r requirements-ppe.txt
 ```
+
+The required models are already included in `models/`.
 
 Register a user once:
 
@@ -53,4 +53,3 @@ Then run either lab:
 python lab1.py
 python lab2.py
 ```
-
