@@ -17,6 +17,8 @@ from database import get_all_users, init_database
 from display import Display
 from face_engine import FaceEngine
 from ppe_status import PPEStatus
+from preview_server import PreviewServer
+from config import PREVIEW_ENABLED
 
 
 def append_log(status: str, name: str, score: float, detail: str = "") -> None:
@@ -79,6 +81,11 @@ def run_lab(hardware, title: str, use_yellow_for_ppe: bool) -> None:
     face_engine = FaceEngine()
     display = Display()
     ppe = PPEStatus()
+    preview = None
+
+    if PREVIEW_ENABLED:
+        preview = PreviewServer(camera)
+        preview.start()
 
     display.show(title, "Ready")
     print(f"[SYSTEM] {title} started")
@@ -141,7 +148,8 @@ def run_lab(hardware, title: str, use_yellow_for_ppe: bool) -> None:
     except KeyboardInterrupt:
         print("[SYSTEM] Stopping")
     finally:
+        if preview is not None:
+            preview.stop()
         camera.release()
         hardware.close()
         display.close()
-

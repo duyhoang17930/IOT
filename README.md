@@ -53,3 +53,15 @@ Then run either lab:
 python lab1.py
 python lab2.py
 ```
+
+When a lab starts, it opens a camera preview tab:
+
+```text
+http://127.0.0.1:8080
+```
+
+If the Raspberry Pi has no desktop browser, open this from another device on the same network:
+
+```text
+http://<raspberry-pi-ip>:8080
+```

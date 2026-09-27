@@ -1,4 +1,5 @@
 import time
+import threading
 
 import cv2
 
@@ -14,6 +15,7 @@ def _camera_source():
 
 class Camera:
     def __init__(self) -> None:
+        self.lock = threading.Lock()
         backend = cv2.CAP_V4L2 if CAMERA_BACKEND.lower() == "v4l2" else cv2.CAP_ANY
         self.capture = cv2.VideoCapture(_camera_source(), backend)
         self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
@@ -27,11 +29,13 @@ class Camera:
             time.sleep(0.05)
 
     def read(self):
-        ok, frame = self.capture.read()
+        with self.lock:
+            ok, frame = self.capture.read()
         if not ok or frame is None or frame.size == 0:
             return None
         return frame
 
     def release(self) -> None:
-        self.capture.release()
+        with self.lock:
+            self.capture.release()
 

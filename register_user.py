@@ -4,10 +4,11 @@ import time
 import numpy as np
 
 from camera import Camera
-from config import REGISTER_SAMPLES, SAMPLE_INTERVAL_SECONDS
+from config import PREVIEW_ENABLED, REGISTER_SAMPLES, SAMPLE_INTERVAL_SECONDS
 from database import add_user, init_database, user_exists
 from display import Display
 from face_engine import FaceEngine
+from preview_server import PreviewServer
 
 
 def parse_args():
@@ -27,11 +28,15 @@ def main() -> None:
     camera = Camera()
     face_engine = FaceEngine()
     display = Display()
+    preview = None
     embeddings = []
     attempts = 0
     max_attempts = args.samples * 8
 
     try:
+        if PREVIEW_ENABLED:
+            preview = PreviewServer(camera)
+            preview.start()
         display.show("Register", args.name)
         while len(embeddings) < args.samples and attempts < max_attempts:
             attempts += 1
@@ -60,10 +65,11 @@ def main() -> None:
         display.show("Registered", args.name)
         print(f"Registered {args.name} ({args.student_id})")
     finally:
+        if preview is not None:
+            preview.stop()
         camera.release()
         display.close()
 
 
 if __name__ == "__main__":
     main()
-
